@@ -1,0 +1,14 @@
+.DS_Store
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+backend/.venv/
+backend/.pytest_cache/
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/assets/*.xlsx
+!backend/assets/.gitkeep
+backend/medical_quiz.db
