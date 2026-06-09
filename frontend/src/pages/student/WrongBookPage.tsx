@@ -1,6 +1,7 @@
 import { Button, Card, Empty, Form, Select, Space, Tag, Typography, message } from "antd";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { History } from "lucide-react";
 import { practiceApi, taxonomyApi } from "../../api/client";
 import { QuestionViewer } from "../../components/QuestionViewer";
 import type { Chapter, KnowledgePoint, Subject, WrongQuestion } from "../../types/domain";
@@ -31,13 +32,14 @@ export function WrongBookPage() {
 
   return (
     <div className="page">
-      <div className="page-heading">
+      <div className="page-heading page-heading--hero">
         <div>
+          <span className="page-heading__eyebrow">错题复盘</span>
           <Typography.Title level={2}>错题本</Typography.Title>
           <Typography.Text type="secondary">按科目、章节和错误次数筛选复习。</Typography.Text>
         </div>
         <Link to="/practice?mode=wrong">
-          <Button type="primary">错题重刷</Button>
+          <Button type="primary" icon={<History size={16} />}>错题重刷</Button>
         </Link>
       </div>
       <div className="panel">
@@ -102,7 +104,7 @@ export function WrongBookPage() {
           ))
         ) : (
           <div className="panel">
-            <Empty description="暂无错题" />
+            <Empty description="暂无错题，继续保持" />
           </div>
         )}
       </Space>

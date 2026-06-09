@@ -1,7 +1,7 @@
-import { Button, Card, Col, Drawer, Form, Input, InputNumber, Modal, Progress, Row, Select, Space, Tag, Typography, message } from "antd";
+import { Button, Card, Col, Form, Input, InputNumber, Modal, Progress, Row, Select, Space, Tag, Typography, message } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
+import { ChevronLeft, ChevronRight, Layers3, RotateCcw } from "lucide-react";
 import { practiceApi, questionApi, taxonomyApi } from "../../api/client";
 import { QuestionViewer } from "../../components/QuestionViewer";
 import type { Chapter, KnowledgePoint, PracticeAnswerResult, Question, Subject } from "../../types/domain";
@@ -130,13 +130,18 @@ export function PracticePage() {
 
   return (
     <div className="page">
-      <div className="page-heading">
+      <section className="practice-hero">
         <div>
-          <Typography.Title level={2}>开始刷题</Typography.Title>
-          <Typography.Text type="secondary">支持顺序、随机、章节、知识点、错题、收藏、未做题和高频错题练习。</Typography.Text>
+          <span>训练中心</span>
+          <Typography.Title level={1}>把每一道题都变成复盘资产</Typography.Title>
+          <Typography.Text>顺序、随机、章节、错题、收藏和高频错题练习都在这里开始。</Typography.Text>
         </div>
-      </div>
-      <div className="panel">
+        <div className="practice-hero__status">
+          <strong>{questions.length ? `${index + 1}/${questions.length}` : "待开始"}</strong>
+          <span>{questions.length ? "当前进度" : "选择条件后开练"}</span>
+        </div>
+      </section>
+      <div className="panel practice-filter-panel">
         <Form form={form} layout="inline" className="filter-form">
           <Form.Item name="mode" label="模式">
             <Select options={modes} style={{ width: 140 }} />
@@ -169,7 +174,7 @@ export function PracticePage() {
           <Form.Item name="question_count" label="题量">
             <InputNumber min={1} max={200} />
           </Form.Item>
-          <Button type="primary" icon={<RotateCcw size={16} />} onClick={start} loading={loading}>开始</Button>
+          <Button type="primary" icon={<RotateCcw size={16} />} onClick={start} loading={loading}>生成训练</Button>
         </Form>
       </div>
 
@@ -207,8 +212,9 @@ export function PracticePage() {
               </>
             ) : (
               <div className="empty-workspace">
+                <span className="empty-workspace__icon"><Layers3 size={30} /></span>
                 <Typography.Title level={4}>选择条件后开始练习</Typography.Title>
-                <Typography.Text type="secondary">系统会从已发布题库中抽取题目。</Typography.Text>
+                <Typography.Text type="secondary">系统会从已发布题库中抽取题目，生成一组适合当前目标的训练。</Typography.Text>
               </div>
             )}
           </Card>

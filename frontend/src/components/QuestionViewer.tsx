@@ -37,7 +37,8 @@ export function QuestionViewer({
           <Space direction="vertical" size={10}>
             {(question.options || []).map((option) => (
               <Radio key={option.option_key} value={option.option_key} className="answer-option">
-                <strong>{option.option_key}.</strong> {option.content}
+                <span className="answer-option__key">{option.option_key}</span>
+                <span className="answer-option__content">{option.content}</span>
                 {option.image_url ? <Image src={option.image_url} width={120} /> : null}
               </Radio>
             ))}
@@ -56,7 +57,8 @@ export function QuestionViewer({
           <Space direction="vertical" size={10}>
             {(question.options || []).map((option) => (
               <Checkbox key={option.option_key} value={option.option_key} className="answer-option">
-                <strong>{option.option_key}.</strong> {option.content}
+                <span className="answer-option__key">{option.option_key}</span>
+                <span className="answer-option__content">{option.content}</span>
                 {option.image_url ? <Image src={option.image_url} width={120} /> : null}
               </Checkbox>
             ))}

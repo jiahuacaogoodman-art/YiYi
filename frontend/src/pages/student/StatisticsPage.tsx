@@ -35,11 +35,13 @@ export function StatisticsPage() {
 
   return (
     <div className="page">
-      <div className="page-heading">
+      <div className="page-heading page-heading--hero">
         <div>
+          <span className="page-heading__eyebrow">学习画像</span>
           <Typography.Title level={2}>学习统计</Typography.Title>
           <Typography.Text type="secondary">查看正确率、章节掌握度、高频错误知识点和复习建议。</Typography.Text>
         </div>
+        <span className="page-heading__badge"><BarChart3 size={18} /> {percent(stats?.correct_rate)} 正确率</span>
       </div>
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
