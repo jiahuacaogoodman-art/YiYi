@@ -3,7 +3,7 @@ from __future__ import annotations
 from app.models.exam import Exam, ExamQuestion, ExamRecord, ExamRecordAnswer
 from app.models.import_record import ImportRecord
 from app.models.log import OperationLog
-from app.models.practice import UserAnswer, UserFavorite, UserWrongQuestion
+from app.models.practice import QuestionComment, QuestionLike, UserAnswer, UserFavorite, UserNote, UserWrongQuestion
 from app.models.question import Question, QuestionOption, QuestionTag
 from app.models.settings import SystemSetting
 from app.models.taxonomy import Chapter, KnowledgePoint, Subject
@@ -21,6 +21,8 @@ __all__ = [
     "OperationLog",
     "Question",
     "QuestionFeedback",
+    "QuestionComment",
+    "QuestionLike",
     "QuestionOption",
     "QuestionTag",
     "Role",
@@ -29,6 +31,6 @@ __all__ = [
     "User",
     "UserAnswer",
     "UserFavorite",
+    "UserNote",
     "UserWrongQuestion",
 ]
-

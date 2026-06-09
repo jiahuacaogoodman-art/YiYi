@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Layers3, RotateCcw } from "lucide-react";
 import { practiceApi, questionApi, taxonomyApi } from "../../api/client";
 import { QuestionViewer } from "../../components/QuestionViewer";
+import { useQuestionInteractions } from "../../hooks/useQuestionInteractions";
 import type { Chapter, KnowledgePoint, PracticeAnswerResult, Question, Subject } from "../../types/domain";
 
 const modes = [
@@ -28,6 +29,11 @@ export function PracticePage() {
   const [loading, setLoading] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackText, setFeedbackText] = useState("");
+  const interactions = useQuestionInteractions({
+    onQuestionPatch: (questionId, patch) => {
+      setQuestions((items) => items.map((item) => (item.id === questionId ? { ...item, ...patch } : item)));
+    },
+  });
 
   const current = questions[index];
   const progress = questions.length ? Math.round(((index + 1) / questions.length) * 100) : 0;
@@ -200,6 +206,9 @@ export function PracticePage() {
                   onSubmit={submit}
                   onFavorite={toggleFavorite}
                   onFeedback={() => setFeedbackOpen(true)}
+                  onNote={() => interactions.openNotes(current)}
+                  onComment={() => interactions.openComments(current)}
+                  onLike={() => interactions.toggleLike(current)}
                 />
                 <div className="question-nav">
                   <Button icon={<ChevronLeft size={16} />} disabled={index === 0} onClick={() => setIndex(index - 1)}>
@@ -230,6 +239,7 @@ export function PracticePage() {
       <Modal title="这题有问题" open={feedbackOpen} onOk={sendFeedback} onCancel={() => setFeedbackOpen(false)} okText="提交反馈">
         <Input.TextArea rows={5} value={feedbackText} onChange={(event) => setFeedbackText(event.target.value)} placeholder="请描述题干、答案、解析或分类的问题" />
       </Modal>
+      {interactions.modals}
     </div>
   );
 }

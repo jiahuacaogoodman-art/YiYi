@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { History } from "lucide-react";
 import { practiceApi, taxonomyApi } from "../../api/client";
 import { QuestionViewer } from "../../components/QuestionViewer";
+import { useQuestionInteractions } from "../../hooks/useQuestionInteractions";
 import type { Chapter, KnowledgePoint, Subject, WrongQuestion } from "../../types/domain";
 import { shortDate } from "../../utils/format";
 
@@ -13,6 +14,13 @@ export function WrongBookPage() {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [points, setPoints] = useState<KnowledgePoint[]>([]);
   const [filters, setFilters] = useState<Record<string, unknown>>({ sort: "recent" });
+  const interactions = useQuestionInteractions({
+    onQuestionPatch: (questionId, patch) => {
+      setItems((current) =>
+        current.map((item) => (item.question.id === questionId ? { ...item, question: { ...item.question, ...patch } } : item)),
+      );
+    },
+  });
 
   const load = () => practiceApi.wrong({ page_size: 100, ...filters }).then((data) => setItems(data.items));
 
@@ -99,7 +107,13 @@ export function WrongBookPage() {
                 </Space>
                 <Button danger onClick={() => remove(item.question.id)}>移出错题本</Button>
               </div>
-              <QuestionViewer question={item.question} submitted />
+              <QuestionViewer
+                question={item.question}
+                submitted
+                onNote={() => interactions.openNotes(item.question)}
+                onComment={() => interactions.openComments(item.question)}
+                onLike={() => interactions.toggleLike(item.question)}
+              />
             </Card>
           ))
         ) : (
@@ -108,6 +122,7 @@ export function WrongBookPage() {
           </div>
         )}
       </Space>
+      {interactions.modals}
     </div>
   );
 }

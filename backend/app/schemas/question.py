@@ -102,9 +102,13 @@ class QuestionOut(BaseModel):
     correct_rate: float
     favorite_count: int
     feedback_count: int
+    note_count: int = 0
+    comment_count: int = 0
+    like_count: int = 0
     options: list[QuestionOptionOut] = Field(default_factory=list)
     tags: list[str] = Field(default_factory=list)
     is_favorited: bool = False
+    is_liked: bool = False
     created_at: datetime
     updated_at: datetime
 
@@ -130,6 +134,9 @@ class QuestionListOut(BaseModel):
     correct_rate: float
     favorite_count: int
     feedback_count: int
+    note_count: int = 0
+    comment_count: int = 0
+    like_count: int = 0
     tags: list[str] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime

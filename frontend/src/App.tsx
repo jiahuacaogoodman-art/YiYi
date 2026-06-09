@@ -2,7 +2,8 @@ import { ConfigProvider, App as AntApp } from "antd";
 import zhCN from "antd/locale/zh_CN";
 import { useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { AppShell } from "./layouts/AppShell";
+import { StudentShell } from "./layouts/StudentShell";
+import { AdminShell } from "./layouts/AdminShell";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { useAuthStore } from "./stores/authStore";
 import { LoginPage } from "./pages/LoginPage";
@@ -11,6 +12,9 @@ import { SubjectsPage } from "./pages/student/SubjectsPage";
 import { PracticePage } from "./pages/student/PracticePage";
 import { WrongBookPage } from "./pages/student/WrongBookPage";
 import { FavoritesPage } from "./pages/student/FavoritesPage";
+import { NotesPage } from "./pages/student/NotesPage";
+import { CommentsPage } from "./pages/student/CommentsPage";
+import { LikesPage } from "./pages/student/LikesPage";
 import { ExamsPage } from "./pages/student/ExamsPage";
 import { StatisticsPage } from "./pages/student/StatisticsPage";
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
@@ -36,47 +40,47 @@ export function App() {
       locale={zhCN}
       theme={{
         token: {
-          colorPrimary: "#183f38",
-          colorSuccess: "#2f8f62",
-          colorWarning: "#b98538",
-          colorError: "#d74f45",
-          colorInfo: "#183f38",
-          colorText: "#182523",
-          colorTextSecondary: "#77807d",
-          colorBgLayout: "#f6f4ef",
+          colorPrimary: "#4c7dff",
+          colorSuccess: "#16b873",
+          colorWarning: "#ff9f2d",
+          colorError: "#f04b4b",
+          colorInfo: "#4c7dff",
+          colorText: "#1d2636",
+          colorTextSecondary: "#8a94a6",
+          colorBgLayout: "#f5f8ff",
           colorBgContainer: "#ffffff",
-          colorBorder: "#ebe5d9",
-          borderRadius: 8,
+          colorBorder: "#e8edf6",
+          borderRadius: 10,
           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif',
         },
         components: {
-          Card: { borderRadiusLG: 8 },
+          Card: { borderRadiusLG: 12 },
           Button: {
-            borderRadius: 8,
+            borderRadius: 10,
             controlHeight: 36,
-            primaryShadow: "0 10px 24px rgba(24, 63, 56, 0.18)",
+            primaryShadow: "0 12px 28px rgba(76, 125, 255, 0.22)",
           },
-          Layout: { siderBg: "#12332e", bodyBg: "#f6f4ef" },
+          Layout: { siderBg: "#ffffff", bodyBg: "#f5f8ff" },
           Menu: {
-            itemBorderRadius: 8,
-            itemSelectedBg: "rgba(214, 179, 116, 0.18)",
-            itemSelectedColor: "#f5d99c",
-            itemColor: "rgba(255,255,255,0.72)",
-            itemHoverColor: "#ffffff",
-            itemHoverBg: "rgba(255,255,255,0.08)",
+            itemBorderRadius: 10,
+            itemSelectedBg: "#eff5ff",
+            itemSelectedColor: "#4c7dff",
+            itemColor: "#6f7a8e",
+            itemHoverColor: "#4c7dff",
+            itemHoverBg: "#f6f9ff",
           },
           Segmented: {
-            itemSelectedBg: "#183f38",
-            itemSelectedColor: "#fff8e7",
+            itemSelectedBg: "#4c7dff",
+            itemSelectedColor: "#ffffff",
           },
           Table: {
-            headerBg: "#faf7ef",
-            headerColor: "#334844",
-            rowHoverBg: "#fbf8f1",
+            headerBg: "#f6f9ff",
+            headerColor: "#455066",
+            rowHoverBg: "#f8fbff",
           },
           Progress: {
-            defaultColor: "#c8a467",
-            remainingColor: "#ece7dc",
+            defaultColor: "#4c7dff",
+            remainingColor: "#edf2fb",
           },
         },
       }}
@@ -86,18 +90,21 @@ export function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route element={<ProtectedRoute />}>
-              <Route element={<AppShell />}>
+              <Route element={<StudentShell />}>
                 <Route index element={<HomePage />} />
                 <Route path="subjects" element={<SubjectsPage />} />
                 <Route path="practice" element={<PracticePage />} />
                 <Route path="wrong" element={<WrongBookPage />} />
                 <Route path="favorites" element={<FavoritesPage />} />
+                <Route path="notes" element={<NotesPage />} />
+                <Route path="comments" element={<CommentsPage />} />
+                <Route path="likes" element={<LikesPage />} />
                 <Route path="exams" element={<ExamsPage />} />
                 <Route path="statistics" element={<StatisticsPage />} />
               </Route>
             </Route>
             <Route element={<ProtectedRoute adminOnly />}>
-              <Route element={<AppShell />}>
+              <Route element={<AdminShell />}>
                 <Route path="admin" element={<AdminDashboardPage />} />
                 <Route path="admin/questions" element={<QuestionsManagePage />} />
                 <Route path="admin/import" element={<QuestionImportPage />} />

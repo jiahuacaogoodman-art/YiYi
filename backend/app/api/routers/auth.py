@@ -18,7 +18,12 @@ router = APIRouter(prefix="/auth", tags=["认证"])
 
 @router.post("/login", response_model=TokenOut)
 def login(payload: LoginIn, db: Session = Depends(db_session)) -> TokenOut:
-    user = db.scalar(select(User).where(User.username == payload.username, User.deleted_at.is_(None)))
+    user = db.scalar(
+        select(User).where(
+            or_(User.username == payload.username, User.email == payload.username),
+            User.deleted_at.is_(None),
+        )
+    )
     if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="用户名或密码错误")
     if not user.is_active:
@@ -36,7 +41,7 @@ def register(payload: RegisterIn, db: Session = Depends(db_session)) -> User:
         select(User).where(
             or_(
                 User.username == payload.username,
-                User.email == payload.email if payload.email else False,
+                User.email == payload.email,
                 User.phone == payload.phone if payload.phone else False,
             )
         )
