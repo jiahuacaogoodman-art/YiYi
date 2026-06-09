@@ -1,10 +1,10 @@
 import { Button, Col, Collapse, Empty, Progress, Row, Space, Tag, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { BookMarked, ChevronRight } from "lucide-react";
+import { BookMarked, ChevronDown, ChevronRight, Layers3 } from "lucide-react";
 import { taxonomyApi } from "../../api/client";
 import type { Chapter, KnowledgePoint, Subject } from "../../types/domain";
-import { percent } from "../../utils/format";
+import { compactNumber, percent } from "../../utils/format";
 
 export function SubjectsPage() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -33,11 +33,25 @@ export function SubjectsPage() {
 
   return (
     <div className="page">
+      <section className="library-hero">
+        <div>
+          <span>毅医题库</span>
+          <Typography.Title level={1}>按学科定位，按章节推进</Typography.Title>
+          <Typography.Text>每个科目都可以继续展开到章节和知识点，适合期末复习、阶段训练和考前冲刺。</Typography.Text>
+        </div>
+        <div className="library-hero__meta">
+          <strong>{compactNumber(subjects.reduce((total, item) => total + Number(item.question_count || 0), 0))}</strong>
+          <span>题库总量</span>
+        </div>
+      </section>
       <div className="page-heading">
         <div>
           <Typography.Title level={2}>题库选择</Typography.Title>
           <Typography.Text type="secondary">按医学学科、章节和知识点选择练习入口。</Typography.Text>
         </div>
+        <Link to="/practice">
+          <Button type="primary" icon={<Layers3 size={16} />}>自主组题</Button>
+        </Link>
       </div>
       {subjects.length ? (
         <Row gutter={[16, 16]}>
@@ -52,8 +66,8 @@ export function SubjectsPage() {
                   </div>
                 </div>
                 <div className="subject-panel__stats">
-                  <span>{subject.question_count} 题</span>
-                  <span>已刷 {subject.practiced_count}</span>
+                  <span>{compactNumber(subject.question_count)} 题</span>
+                  <span>已刷 {compactNumber(subject.practiced_count)}</span>
                   <span>{percent(subject.correct_rate)}</span>
                 </div>
                 <Progress percent={subject.correct_rate} size="small" />
@@ -61,7 +75,7 @@ export function SubjectsPage() {
                   <Link to={`/practice?subject_id=${subject.id}`}>
                     <Button type="primary">科目练习</Button>
                   </Link>
-                  <Button onClick={() => loadChapters(subject.id)} icon={<ChevronRight size={16} />}>查看章节</Button>
+                  <Button onClick={() => loadChapters(subject.id)} icon={chapters[subject.id] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}>查看章节</Button>
                 </Space>
                 {chapters[subject.id] ? (
                   <Collapse

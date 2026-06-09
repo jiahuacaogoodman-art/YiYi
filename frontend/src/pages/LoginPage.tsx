@@ -1,8 +1,9 @@
 import { Button, Card, Form, Input, Segmented, Typography, message } from "antd";
 import { useState } from "react";
-import { Activity, Lock, UserRound } from "lucide-react";
+import { Lock, UserRound } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { authApi } from "../api/client";
+import { BrandMark } from "../components/BrandMark";
 import { useAuthStore } from "../stores/authStore";
 
 export function LoginPage() {
@@ -31,14 +32,34 @@ export function LoginPage() {
     <main className="login-page">
       <section className="login-visual">
         <div className="login-visual__content">
-          <Activity size={44} />
-          <Typography.Title>医学刷题平台</Typography.Title>
-          <Typography.Paragraph>
-            面向医学生、执业医师考试和期末复习的中文题库系统，学生刷题和后台维护在同一套工作台里完成。
-          </Typography.Paragraph>
+          <BrandMark size="large" />
+          <div className="login-visual__copy">
+            <Typography.Title>把医学复习做成一套可靠的训练系统</Typography.Title>
+            <Typography.Paragraph>
+              围绕科目、章节、知识点、错题和考试记录组织学习路径，学生刷题与题库运营在同一平台内闭环。
+            </Typography.Paragraph>
+          </div>
+          <div className="login-visual__proof">
+            <div>
+              <strong>题库</strong>
+              <span>分层管理</span>
+            </div>
+            <div>
+              <strong>训练</strong>
+              <span>错题闭环</span>
+            </div>
+            <div>
+              <strong>考试</strong>
+              <span>限时测评</span>
+            </div>
+          </div>
         </div>
       </section>
       <Card className="login-card" variant="borderless">
+        <div className="login-card__head">
+          <Typography.Title level={2}>{mode === "login" ? "欢迎回来" : "创建学生账号"}</Typography.Title>
+          <Typography.Text type="secondary">进入毅医题库，继续今天的医学训练。</Typography.Text>
+        </div>
         <Segmented
           block
           value={mode}

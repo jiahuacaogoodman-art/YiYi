@@ -14,10 +14,10 @@ import {
   NotebookTabs,
   Settings,
   ShieldCheck,
-  Stethoscope,
   Users,
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { BrandMark } from "../components/BrandMark";
 import { useAuthStore } from "../stores/authStore";
 
 const { Sider, Content } = Layout;
@@ -47,6 +47,14 @@ const adminItems: MenuProps["items"] = [
   { key: "/admin/settings", icon: <Settings size={18} />, label: <Link to="/admin/settings">系统设置</Link> },
 ];
 
+const mobileItems = [
+  { key: "/", icon: <Home size={20} />, label: "首页" },
+  { key: "/subjects", icon: <BookOpen size={20} />, label: "题库" },
+  { key: "/practice", icon: <NotebookTabs size={20} />, label: "刷题" },
+  { key: "/exams", icon: <ClipboardList size={20} />, label: "考试" },
+  { key: "/statistics", icon: <BarChart3 size={20} />, label: "我的" },
+];
+
 function selectedKey(pathname: string) {
   const all = [...(studentItems || []), ...(adminItems || [])].map((item) => String(item?.key || ""));
   return all
@@ -59,6 +67,7 @@ export function AppShell() {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const isAdmin = user?.role.name !== "student";
+  const isAdminRoute = location.pathname.startsWith("/admin");
 
   const accountItems: MenuProps["items"] = [
     { key: "student", label: "学生端", onClick: () => navigate("/") },
@@ -80,13 +89,7 @@ export function AppShell() {
     <Layout className="app-shell">
       <Sider className="app-sider" width={252} breakpoint="lg" collapsedWidth={0}>
         <Link to="/" className="brand">
-          <span className="brand__mark">
-            <Stethoscope size={22} />
-          </span>
-          <span>
-            <strong>医学刷题平台</strong>
-            <small>题库与考试系统</small>
-          </span>
+          <BrandMark />
         </Link>
         <div className="menu-section">学生端</div>
         <Menu mode="inline" selectedKeys={[selectedKey(location.pathname)]} items={studentItems} />
@@ -99,8 +102,9 @@ export function AppShell() {
       </Sider>
       <Layout>
         <header className="topbar">
-          <div>
-            <Typography.Text type="secondary">中文医学题库运营系统</Typography.Text>
+          <div className="topbar__title">
+            <Typography.Text type="secondary">医学教育 · 智能题库平台</Typography.Text>
+            <strong>{isAdminRoute ? "运营控制台" : "学习工作台"}</strong>
           </div>
           <Dropdown menu={{ items: accountItems }} placement="bottomRight">
             <Button type="text" className="account-button">
@@ -112,6 +116,20 @@ export function AppShell() {
         <Content className="app-content">
           <Outlet />
         </Content>
+        {isAdminRoute ? null : (
+          <nav className="mobile-tabbar" aria-label="学生端快捷导航">
+            {mobileItems.map((item) => (
+              <Link
+                key={item.key}
+                className={selectedKey(location.pathname) === item.key ? "mobile-tabbar__item mobile-tabbar__item--active" : "mobile-tabbar__item"}
+                to={item.key}
+              >
+                <span className="mobile-tabbar__icon">{item.icon}</span>
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </nav>
+        )}
       </Layout>
     </Layout>
   );
