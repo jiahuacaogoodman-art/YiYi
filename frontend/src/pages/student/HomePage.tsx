@@ -1,7 +1,7 @@
 import { Button, Col, Empty, Progress, Row, Space, Tag, Typography } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { BarChart3, BookOpen, Bookmark, ChevronDown, ClipboardList, Heart, History, MessageSquare, NotebookPen, PlayCircle, ThumbsUp } from "lucide-react";
+import { BarChart3, BookOpen, ChevronDown, ClipboardList, Heart, History, MessageSquare, NotebookPen, PlayCircle, ThumbsUp } from "lucide-react";
 import { statisticsApi, taxonomyApi } from "../../api/client";
 import { BrandMark } from "../../components/BrandMark";
 import { EChart } from "../../components/EChart";
@@ -9,12 +9,13 @@ import type { Subject, UserStatistics } from "../../types/domain";
 import { barOption, lineOption } from "../../utils/charts";
 import { compactNumber, percent } from "../../utils/format";
 
-const termTabs = ["大一期末", "大二期末", "大三期末", "大四期末"];
+const studyTabs = ["全部科目", "待继续", "已完成", "未开始"];
 
 export function HomePage() {
   const [stats, setStats] = useState<UserStatistics | null>(null);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeStudyTab, setActiveStudyTab] = useState(studyTabs[0]);
 
   useEffect(() => {
     Promise.all([statisticsApi.user(), taxonomyApi.subjects({ enabled: true, page_size: 12 })])
@@ -49,6 +50,19 @@ export function HomePage() {
     return Number(row?.total || row?.count || 0);
   }, [stats]);
 
+  const visibleSubjects = useMemo(() => {
+    if (activeStudyTab === "待继续") {
+      return subjects.filter((subject) => subject.practiced_count > 0 && subject.practiced_count < subject.question_count);
+    }
+    if (activeStudyTab === "已完成") {
+      return subjects.filter((subject) => subject.question_count > 0 && subject.practiced_count >= subject.question_count);
+    }
+    if (activeStudyTab === "未开始") {
+      return subjects.filter((subject) => subject.practiced_count === 0);
+    }
+    return subjects;
+  }, [activeStudyTab, subjects]);
+
   const quickItems = [
     { to: "/subjects", title: "主观题", hint: "按学科进入", icon: <BookOpen size={22} /> },
     { to: "/practice", title: "自主组题", hint: "自由选择模式", icon: <NotebookPen size={22} /> },
@@ -59,9 +73,9 @@ export function HomePage() {
   const toolItems = [
     { to: "/wrong", title: "错题", icon: <History size={22} /> },
     { to: "/favorites", title: "收藏", icon: <Heart size={22} /> },
-    { to: "/statistics", title: "笔记", icon: <Bookmark size={22} /> },
-    { to: "/subjects", title: "评论", icon: <MessageSquare size={22} /> },
-    { to: "/statistics", title: "点赞", icon: <ThumbsUp size={22} /> },
+    { to: "/notes", title: "笔记", icon: <NotebookPen size={22} /> },
+    { to: "/comments", title: "评论", icon: <MessageSquare size={22} /> },
+    { to: "/likes", title: "点赞", icon: <ThumbsUp size={22} /> },
   ];
 
   return (
@@ -150,15 +164,20 @@ export function HomePage() {
         <Col xs={24} xl={13}>
           <div className="panel study-board">
             <div className="study-board__tabs">
-              {termTabs.map((item, index) => (
-                <button type="button" key={item} className={index === 0 ? "study-board__tab study-board__tab--active" : "study-board__tab"}>
+              {studyTabs.map((item) => (
+                <button
+                  type="button"
+                  key={item}
+                  className={item === activeStudyTab ? "study-board__tab study-board__tab--active" : "study-board__tab"}
+                  onClick={() => setActiveStudyTab(item)}
+                >
                   {item}
                 </button>
               ))}
             </div>
-            {subjects.length ? (
+            {visibleSubjects.length ? (
               <div className="subject-list">
-                {subjects.slice(0, 8).map((subject) => (
+                {visibleSubjects.map((subject) => (
                   <div className="subject-list__row" key={subject.id}>
                     <span className="subject-list__toggle"><ChevronDown size={18} /></span>
                     <div>
@@ -178,7 +197,7 @@ export function HomePage() {
                 ))}
               </div>
             ) : (
-              <Empty description={loading ? "正在加载科目" : "暂无启用科目"} />
+              <Empty description={loading ? "正在加载科目" : "当前筛选下暂无科目"} />
             )}
           </div>
         </Col>

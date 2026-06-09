@@ -3,7 +3,7 @@ from __future__ import annotations
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.models.practice import UserFavorite
+from app.models.practice import QuestionComment, QuestionLike, UserFavorite, UserNote
 from app.models.question import Question
 from app.models.taxonomy import Chapter, KnowledgePoint, Subject
 
@@ -17,6 +17,7 @@ def serialize_question(db: Session, question: Question, user_id: int | None = No
     chapter_name = question.chapter.name if question.chapter else None
     kp_name = question.knowledge_point.name if question.knowledge_point else None
     is_favorited = False
+    is_liked = False
     if user_id is not None:
         is_favorited = (
             db.scalar(
@@ -28,6 +29,46 @@ def serialize_question(db: Session, question: Question, user_id: int | None = No
             )
             or 0
         ) > 0
+        is_liked = (
+            db.scalar(
+                select(func.count(QuestionLike.id)).where(
+                    QuestionLike.user_id == user_id,
+                    QuestionLike.question_id == question.id,
+                    QuestionLike.deleted_at.is_(None),
+                )
+            )
+            or 0
+        ) > 0
+    note_count = 0
+    if user_id is not None:
+        note_count = (
+            db.scalar(
+                select(func.count(UserNote.id)).where(
+                    UserNote.user_id == user_id,
+                    UserNote.question_id == question.id,
+                    UserNote.deleted_at.is_(None),
+                )
+            )
+            or 0
+        )
+    comment_count = (
+        db.scalar(
+            select(func.count(QuestionComment.id)).where(
+                QuestionComment.question_id == question.id,
+                QuestionComment.deleted_at.is_(None),
+            )
+        )
+        or 0
+    )
+    like_count = (
+        db.scalar(
+            select(func.count(QuestionLike.id)).where(
+                QuestionLike.question_id == question.id,
+                QuestionLike.deleted_at.is_(None),
+            )
+        )
+        or 0
+    )
     data = {
         "id": question.id,
         "stem": question.stem,
@@ -55,8 +96,12 @@ def serialize_question(db: Session, question: Question, user_id: int | None = No
         "correct_rate": question.correct_rate,
         "favorite_count": question.favorite_count,
         "feedback_count": question.feedback_count,
+        "note_count": note_count,
+        "comment_count": comment_count,
+        "like_count": like_count,
         "tags": question_tags(question),
         "is_favorited": is_favorited,
+        "is_liked": is_liked,
         "created_at": question.created_at,
         "updated_at": question.updated_at,
     }
@@ -152,4 +197,3 @@ def serialize_knowledge_point(db: Session, kp: KnowledgePoint) -> dict:
         "created_at": kp.created_at,
         "updated_at": kp.updated_at,
     }
-

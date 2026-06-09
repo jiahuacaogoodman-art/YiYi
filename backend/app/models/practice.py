@@ -50,3 +50,39 @@ class UserWrongQuestion(Base, TimestampMixin):
     user = relationship("User")
     question = relationship("Question")
 
+
+class UserNote(Base, TimestampMixin):
+    __tablename__ = "user_notes"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    question_id: Mapped[int] = mapped_column(ForeignKey("questions.id"), index=True)
+    content: Mapped[str] = mapped_column(Text)
+
+    user = relationship("User")
+    question = relationship("Question")
+
+
+class QuestionComment(Base, TimestampMixin):
+    __tablename__ = "question_comments"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    question_id: Mapped[int] = mapped_column(ForeignKey("questions.id"), index=True)
+    content: Mapped[str] = mapped_column(Text)
+    is_pinned: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+
+    user = relationship("User")
+    question = relationship("Question")
+
+
+class QuestionLike(Base, TimestampMixin):
+    __tablename__ = "question_likes"
+    __table_args__ = (UniqueConstraint("user_id", "question_id", name="uq_user_question_like"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    question_id: Mapped[int] = mapped_column(ForeignKey("questions.id"), index=True)
+
+    user = relationship("User")
+    question = relationship("Question")

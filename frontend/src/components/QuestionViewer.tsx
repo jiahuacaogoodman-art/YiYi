@@ -1,5 +1,5 @@
 import { Button, Checkbox, Form, Image, Input, Radio, Space, Tag, Typography } from "antd";
-import { Flag, Heart, MessageSquareWarning } from "lucide-react";
+import { Flag, Heart, MessageSquare, MessageSquareWarning, NotebookPen, ThumbsUp } from "lucide-react";
 import type { Question } from "../types/domain";
 import { difficultyLabel, questionTypeLabel } from "../utils/format";
 
@@ -13,6 +13,13 @@ interface QuestionViewerProps {
   onSubmit?: () => void;
   onFavorite?: () => void;
   onFeedback?: () => void;
+  onNote?: () => void;
+  onComment?: () => void;
+  onLike?: () => void;
+  isLiked?: boolean;
+  noteCount?: number;
+  commentCount?: number;
+  likeCount?: number;
 }
 
 export function QuestionViewer({
@@ -25,10 +32,30 @@ export function QuestionViewer({
   onSubmit,
   onFavorite,
   onFeedback,
+  onNote,
+  onComment,
+  onLike,
+  isLiked,
+  noteCount,
+  commentCount,
+  likeCount,
 }: QuestionViewerProps) {
   const type = question.question_type;
   const selected = value || "";
   const correct = correctAnswer || question.correct_answer;
+  const hasSelectedAnswer = Boolean(selected);
+  const selectedSet = new Set(selected.split(",").filter(Boolean));
+  const correctSet = new Set(correct.split(",").filter(Boolean));
+
+  const optionClassName = (key: string) =>
+    [
+      "answer-option",
+      selectedSet.has(key) ? "answer-option--selected" : "",
+      submitted && correctSet.has(key) ? "answer-option--correct" : "",
+      submitted && selectedSet.has(key) && !correctSet.has(key) ? "answer-option--wrong" : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
 
   const renderInput = () => {
     if (type === "single_choice" || type === "true_false") {
@@ -36,7 +63,7 @@ export function QuestionViewer({
         <Radio.Group className="answer-options" value={selected} onChange={(event) => onChange?.(event.target.value)}>
           <Space direction="vertical" size={10}>
             {(question.options || []).map((option) => (
-              <Radio key={option.option_key} value={option.option_key} className="answer-option">
+              <Radio key={option.option_key} value={option.option_key} className={optionClassName(option.option_key)}>
                 <span className="answer-option__key">{option.option_key}</span>
                 <span className="answer-option__content">{option.content}</span>
                 {option.image_url ? <Image src={option.image_url} width={120} /> : null}
@@ -56,7 +83,7 @@ export function QuestionViewer({
         >
           <Space direction="vertical" size={10}>
             {(question.options || []).map((option) => (
-              <Checkbox key={option.option_key} value={option.option_key} className="answer-option">
+              <Checkbox key={option.option_key} value={option.option_key} className={optionClassName(option.option_key)}>
                 <span className="answer-option__key">{option.option_key}</span>
                 <span className="answer-option__content">{option.content}</span>
                 {option.image_url ? <Image src={option.image_url} width={120} /> : null}
@@ -75,13 +102,13 @@ export function QuestionViewer({
   return (
     <div className="question-viewer">
       <div className="question-viewer__meta">
-        <Tag color="blue">{questionTypeLabel[type] || type}</Tag>
+        <Tag className="question-tag question-tag--type">{questionTypeLabel[type] || type}</Tag>
         <Tag color={question.difficulty === "hard" ? "red" : question.difficulty === "easy" ? "green" : "gold"}>
           {difficultyLabel[question.difficulty] || question.difficulty}
         </Tag>
-        <Tag>{question.subject_name || "未分科"}</Tag>
-        <Tag>{question.chapter_name || "未分章"}</Tag>
-        <Tag>{question.knowledge_point_name || "未标知识点"}</Tag>
+        <Tag className="question-tag">{question.subject_name || "未分科"}</Tag>
+        <Tag className="question-tag">{question.chapter_name || "未分章"}</Tag>
+        <Tag className="question-tag">{question.knowledge_point_name || "未标知识点"}</Tag>
       </div>
       <Typography.Title level={4} className="question-viewer__stem">
         {question.stem}
@@ -107,16 +134,39 @@ export function QuestionViewer({
               反馈纠错
             </Button>
           ) : null}
+          {onNote ? (
+            <Button icon={<NotebookPen size={16} />} onClick={onNote}>
+              笔记 {noteCount ?? question.note_count ?? 0}
+            </Button>
+          ) : null}
+          {onComment ? (
+            <Button icon={<MessageSquare size={16} />} onClick={onComment}>
+              评论 {commentCount ?? question.comment_count ?? 0}
+            </Button>
+          ) : null}
+          {onLike ? (
+            <Button icon={<ThumbsUp size={16} fill={(isLiked ?? question.is_liked) ? "currentColor" : "none"} />} onClick={onLike}>
+              点赞 {likeCount ?? question.like_count ?? 0}
+            </Button>
+          ) : null}
         </Space>
       </div>
       {submitted ? (
         <div className="question-analysis">
-          <div>
-            <Typography.Text strong>正确答案：</Typography.Text>
-            <Typography.Text>{correct}</Typography.Text>
+          <div className={hasSelectedAnswer ? "question-analysis__summary" : "question-analysis__summary question-analysis__summary--single"}>
+            <span>
+              <Typography.Text strong>正确答案：</Typography.Text>
+              <b>{correct}</b>
+            </span>
+            {hasSelectedAnswer ? (
+              <span>
+                <Typography.Text strong>你的答案：</Typography.Text>
+                <b className={selected === correct ? "is-correct" : "is-wrong"}>{selected}</b>
+              </span>
+            ) : null}
           </div>
-          <div>
-            <Typography.Text strong>解析：</Typography.Text>
+          <div className="question-analysis__block">
+            <Typography.Text strong className="question-analysis__title">解析</Typography.Text>
             <Typography.Paragraph>{analysis || question.analysis}</Typography.Paragraph>
           </div>
           {question.analysis_image_url ? <Image src={question.analysis_image_url} width={220} /> : null}

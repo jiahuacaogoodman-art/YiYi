@@ -108,9 +108,13 @@ export interface Question {
   correct_rate: number;
   favorite_count: number;
   feedback_count: number;
+  note_count: number;
+  comment_count: number;
+  like_count: number;
   options?: QuestionOption[];
   tags: string[];
   is_favorited?: boolean;
+  is_liked?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -142,6 +146,35 @@ export interface WrongQuestion {
   wrong_count: number;
   last_wrong_at?: string | null;
   last_answer_correct: boolean;
+}
+
+export interface QuestionNote {
+  id: number;
+  question_id: number;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  question?: Question | null;
+}
+
+export interface QuestionComment {
+  id: number;
+  question_id: number;
+  content: string;
+  is_pinned: boolean;
+  user_id: number;
+  username: string;
+  nickname: string;
+  created_at: string;
+  updated_at: string;
+  is_mine: boolean;
+  question?: Question | null;
+}
+
+export interface LikeStatus {
+  question_id: number;
+  is_liked: boolean;
+  like_count: number;
 }
 
 export interface Exam {

@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api.routers import admin, auth, exams, feedback, practice, questions, statistics, taxonomy
+from app.api.routers import admin, auth, exams, feedback, interactions, practice, questions, statistics, taxonomy
 from app.core.config import resolve_backend_path, settings
 from app.core.exceptions import register_exception_handlers
 
@@ -30,6 +30,7 @@ app.include_router(questions.router, prefix="/api")
 app.include_router(practice.router, prefix="/api")
 app.include_router(exams.router, prefix="/api")
 app.include_router(feedback.router, prefix="/api")
+app.include_router(interactions.router, prefix="/api")
 app.include_router(statistics.router, prefix="/api")
 app.include_router(admin.router, prefix="/api")
 

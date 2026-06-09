@@ -9,9 +9,12 @@ import type {
   ImportPreview,
   ImportRecord,
   KnowledgePoint,
+  LikeStatus,
   PageOut,
   PracticeAnswerResult,
   PracticeStart,
+  QuestionComment,
+  QuestionNote,
   Question,
   Subject,
   SystemSetting,
@@ -27,7 +30,7 @@ export interface QueryParams {
 export const authApi = {
   login: (payload: { username: string; password: string }) =>
     unwrap<{ access_token: string; token_type: string }>(http.post("/auth/login", payload)),
-  register: (payload: { username: string; password: string; nickname?: string; email?: string; phone?: string }) =>
+  register: (payload: { username: string; password: string; nickname?: string; email: string; phone?: string }) =>
     unwrap<User>(http.post("/auth/register", payload)),
   me: () => unwrap<User>(http.get("/auth/me")),
   logout: () => unwrap<{ message: string }>(http.post("/auth/logout")),
@@ -108,6 +111,30 @@ export const practiceApi = {
   wrong: (params?: QueryParams) => unwrap<PageOut<WrongQuestion>>(http.get("/practice/wrong", { params })),
   removeWrong: (questionId: number) => unwrap<{ message: string }>(http.delete(`/practice/wrong/${questionId}`)),
   favorites: (params?: QueryParams) => unwrap<PageOut<Question>>(http.get("/practice/favorites", { params })),
+};
+
+export const interactionApi = {
+  questionNotes: (questionId: number, params?: QueryParams) =>
+    unwrap<PageOut<QuestionNote>>(http.get(`/questions/${questionId}/notes`, { params })),
+  createNote: (questionId: number, payload: { content: string }) =>
+    unwrap<QuestionNote>(http.post(`/questions/${questionId}/notes`, payload)),
+  updateNote: (noteId: number, payload: { content: string }) => unwrap<QuestionNote>(http.put(`/notes/${noteId}`, payload)),
+  deleteNote: (noteId: number) => unwrap<{ message: string }>(http.delete(`/notes/${noteId}`)),
+  myNotes: (params?: QueryParams) => unwrap<PageOut<QuestionNote>>(http.get("/me/notes", { params })),
+
+  questionComments: (questionId: number, params?: QueryParams) =>
+    unwrap<PageOut<QuestionComment>>(http.get(`/questions/${questionId}/comments`, { params })),
+  createComment: (questionId: number, payload: { content: string }) =>
+    unwrap<QuestionComment>(http.post(`/questions/${questionId}/comments`, payload)),
+  updateComment: (commentId: number, payload: { content: string }) =>
+    unwrap<QuestionComment>(http.put(`/comments/${commentId}`, payload)),
+  deleteComment: (commentId: number) => unwrap<{ message: string }>(http.delete(`/comments/${commentId}`)),
+  myComments: (params?: QueryParams) => unwrap<PageOut<QuestionComment>>(http.get("/me/comments", { params })),
+
+  likeStatus: (questionId: number) => unwrap<LikeStatus>(http.get(`/questions/${questionId}/like`)),
+  like: (questionId: number) => unwrap<LikeStatus>(http.post(`/questions/${questionId}/like`)),
+  unlike: (questionId: number) => unwrap<LikeStatus>(http.delete(`/questions/${questionId}/like`)),
+  myLikes: (params?: QueryParams) => unwrap<PageOut<Question>>(http.get("/me/likes", { params })),
 };
 
 export const examApi = {

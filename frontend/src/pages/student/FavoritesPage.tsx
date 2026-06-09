@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { practiceApi, questionApi, taxonomyApi } from "../../api/client";
 import { QuestionViewer } from "../../components/QuestionViewer";
+import { useQuestionInteractions } from "../../hooks/useQuestionInteractions";
 import type { Chapter, Question, Subject } from "../../types/domain";
 
 export function FavoritesPage() {
@@ -10,6 +11,11 @@ export function FavoritesPage() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [filters, setFilters] = useState<Record<string, unknown>>({});
+  const interactions = useQuestionInteractions({
+    onQuestionPatch: (questionId, patch) => {
+      setItems((current) => current.map((item) => (item.id === questionId ? { ...item, ...patch } : item)));
+    },
+  });
 
   const load = () => practiceApi.favorites({ page_size: 100, ...filters }).then((data) => setItems(data.items));
 
@@ -80,7 +86,13 @@ export function FavoritesPage() {
                 <span />
                 <Button danger onClick={() => unfavorite(item.id)}>取消收藏</Button>
               </div>
-              <QuestionViewer question={item} submitted />
+              <QuestionViewer
+                question={item}
+                submitted
+                onNote={() => interactions.openNotes(item)}
+                onComment={() => interactions.openComments(item)}
+                onLike={() => interactions.toggleLike(item)}
+              />
             </Card>
           ))
         ) : (
@@ -89,6 +101,7 @@ export function FavoritesPage() {
           </div>
         )}
       </Space>
+      {interactions.modals}
     </div>
   );
 }

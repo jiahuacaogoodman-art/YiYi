@@ -19,7 +19,7 @@ class RegisterIn(BaseModel):
     username: str = Field(min_length=3, max_length=80)
     password: str = Field(min_length=6, max_length=128)
     nickname: str | None = Field(default=None, max_length=80)
-    email: EmailStr | None = None
+    email: EmailStr
     phone: str | None = Field(default=None, max_length=30)
 
 
