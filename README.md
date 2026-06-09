@@ -1,8 +1,6 @@
 # 医学刷题平台
 
-这是一个面向医学生、执业医师考试和期末复习的医学刷题系统后端工程。当前交付范围按你的最新要求聚焦在“除了前端以外全部做完”：FastAPI 后端、数据库模型、认证权限、题库管理、批量导入导出、刷题记录、错题本、收藏、模拟考试、反馈纠错、统计、操作日志、Docker、Seed 数据和接口文档都已经放在项目里。
-
-前端可以后续用 Stitch 单独生成，只需要对接这里的 REST API。
+这是一个面向医学生、执业医师考试和期末复习的医学刷题系统。当前包含 React 前端、FastAPI 后端、数据库模型、认证权限、题库管理、批量导入导出、刷题记录、错题本、收藏、模拟考试、反馈纠错、统计、操作日志、Docker、Seed 数据和接口文档。
 
 ## 目录结构
 
@@ -24,6 +22,10 @@ medical-quiz-platform/
     uploads/                导入文件和错误报告目录
     Dockerfile
     requirements.txt
+  frontend/
+    src/                    React + TypeScript 前端源码
+    package.json
+    vite.config.ts
   docs/
     api.md                  前端对接接口说明
   docker-compose.yml
@@ -31,6 +33,8 @@ medical-quiz-platform/
 ```
 
 ## 本地启动
+
+后端：
 
 ```bash
 cd /Users/caojiahua/Downloads/medical-quiz-platform/backend
@@ -43,9 +47,18 @@ python scripts/seed.py
 uvicorn app.main:app --reload
 ```
 
+前端：
+
+```bash
+cd /Users/caojiahua/Downloads/medical-quiz-platform/frontend
+pnpm install
+pnpm dev
+```
+
 启动后访问：
 
 - API: http://localhost:8000
+- 前端: http://localhost:5173
 - Swagger 文档: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 - Excel 模板下载: http://localhost:8000/api/admin/questions/import/template
@@ -64,9 +77,9 @@ docker compose up --build
 
 Docker 默认使用 PostgreSQL。开发环境直接跑后端时默认使用 SQLite。
 
-## 前端对接
+## 前端配置
 
-前端用 Stitch 生成后，建议配置：
+前端默认读取：
 
 ```text
 VITE_API_BASE_URL=http://localhost:8000/api
@@ -80,7 +93,18 @@ Authorization: Bearer <token>
 
 学生端、后台端需要的主接口都在 [docs/api.md](/Users/caojiahua/Downloads/medical-quiz-platform/docs/api.md) 和 Swagger 中。Excel 导入模板会由 `python scripts/generate_excel_template.py` 或模板下载接口生成到 `backend/assets/`。
 
-## 已实现的非前端能力
+## 已实现能力
+
+### 前端
+
+- 中文登录/注册页，默认管理员账号可直接进入后台
+- 学生端：首页、题库选择、刷题、错题本、收藏题、模拟考试、学习统计
+- 做题页支持单选、多选、判断、填空、简答、图片、解析、收藏和反馈纠错
+- 后台端：控制台、科目分栏、章节、知识点、题目管理、批量导入、套卷管理、用户管理、反馈、数据统计、日志、系统设置
+- 后台题目表单支持题干图片和解析图片上传
+- 使用 React + TypeScript + Vite + Ant Design + Zustand + Axios + ECharts
+
+### 后端
 
 - JWT 登录、注册、当前用户、角色权限隔离
 - 普通用户、管理员、超级管理员三类角色

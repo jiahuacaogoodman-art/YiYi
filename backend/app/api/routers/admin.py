@@ -125,7 +125,12 @@ def list_operation_logs(
         stmt = stmt.where(OperationLog.target_type == target_type)
     stmt = stmt.order_by(OperationLog.created_at.desc())
     total, items = paginate(db, stmt, page, page_size)
-    return PageOut(total=total, page=page, page_size=page_size, items=items)
+    return PageOut(
+        total=total,
+        page=page,
+        page_size=page_size,
+        items=[serialize_operation_log(log) for log in items],
+    )
 
 
 @router.get("/admin/settings", response_model=list[SystemSettingOut])
@@ -186,7 +191,11 @@ def serialize_user_row(db: Session, user: User) -> dict:
         "nickname": user.nickname,
         "email": user.email,
         "phone": user.phone,
-        "role": user.role,
+        "role": {
+            "id": user.role.id,
+            "name": user.role.name,
+            "label": user.role.label,
+        },
         "is_active": user.is_active,
         "last_login_at": user.last_login_at,
         "created_at": user.created_at,
@@ -194,4 +203,19 @@ def serialize_user_row(db: Session, user: User) -> dict:
         "correct_rate": round(correct / total * 100, 2) if total else 0,
         "wrong_count": wrong_count,
         "favorite_count": favorite_count,
+    }
+
+
+def serialize_operation_log(log: OperationLog) -> dict:
+    return {
+        "id": log.id,
+        "operator_id": log.operator_id,
+        "operator_name": log.operator.username if log.operator else None,
+        "action": log.action,
+        "target_type": log.target_type,
+        "target_id": log.target_id,
+        "summary": log.summary,
+        "ip_address": log.ip_address,
+        "created_at": log.created_at,
+        "updated_at": log.updated_at,
     }
