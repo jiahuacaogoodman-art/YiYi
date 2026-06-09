@@ -52,3 +52,20 @@ def test_dashboard_requires_admin() -> None:
     assert response.status_code == 200
     assert "total_questions" in response.json()
 
+
+def test_admin_users_are_json_serializable() -> None:
+    headers = auth_headers()
+    response = client.get("/api/admin/users", headers=headers)
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert data["items"]
+    assert isinstance(data["items"][0]["role"], dict)
+    assert "name" in data["items"][0]["role"]
+
+
+def test_admin_logs_are_json_serializable() -> None:
+    headers = auth_headers()
+    response = client.get("/api/admin/logs", headers=headers)
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert "items" in data
