@@ -1,5 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#2563eb"/>
-  <path d="M32 13v38M13 32h38" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
-  <path d="M20 20l24 24M44 20L20 44" stroke="#a7f3d0" stroke-width="4" stroke-linecap="round" opacity=".65"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <defs>
+    <linearGradient id="bg" x1="14" y1="8" x2="68" y2="72" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2a5b52"/>
+      <stop offset="1" stop-color="#102e2a"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="12" y1="9" x2="68" y2="72" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f7dfaa"/>
+      <stop offset=".5" stop-color="#c8a467"/>
+      <stop offset="1" stop-color="#8e6b35"/>
+    </linearGradient>
+  </defs>
+  <rect x="7" y="7" width="66" height="66" rx="15" fill="url(#bg)"/>
+  <rect x="10" y="10" width="60" height="60" rx="12" fill="none" stroke="url(#gold)" stroke-width="4"/>
+  <path d="M20 20c7-3 13-2 20 3 7-5 13-6 20-3v14c-7-3-13-2-20 3-7-5-13-6-20-3V20Z" fill="#fff8e7" stroke="url(#gold)" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M40 23v43" stroke="url(#gold)" stroke-width="2.7" stroke-linecap="round"/>
+  <path d="M35 39c0-4 2.5-6.5 5-6.5s5 2.5 5 6.5-2.5 6-5 6-5 2.5-5 6.5 2.5 6.5 5 6.5 5-2.5 5-6.5" fill="none" stroke="#fff1c7" stroke-width="2.4" stroke-linecap="round"/>
+  <text x="21" y="60" fill="#f4d99e" font-size="29" font-weight="800" font-family="serif">毅</text>
+  <text x="42" y="60" fill="#f4d99e" font-size="29" font-weight="800" font-family="serif">医</text>
 </svg>

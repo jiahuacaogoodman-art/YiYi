@@ -1,13 +1,15 @@
-import { Button, Col, Empty, Row, Space, Table, Tag, Typography } from "antd";
+import { Button, Col, Empty, Progress, Row, Space, Tag, Typography } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { BarChart3, BookOpen, ClipboardList, Heart, History, PlayCircle } from "lucide-react";
+import { BarChart3, BookOpen, Bookmark, ChevronDown, ClipboardList, Heart, History, MessageSquare, NotebookPen, PlayCircle, ThumbsUp } from "lucide-react";
 import { statisticsApi, taxonomyApi } from "../../api/client";
+import { BrandMark } from "../../components/BrandMark";
 import { EChart } from "../../components/EChart";
-import { MetricCard } from "../../components/MetricCard";
 import type { Subject, UserStatistics } from "../../types/domain";
 import { barOption, lineOption } from "../../utils/charts";
 import { compactNumber, percent } from "../../utils/format";
+
+const termTabs = ["大一期末", "大二期末", "大三期末", "大四期末"];
 
 export function HomePage() {
   const [stats, setStats] = useState<UserStatistics | null>(null);
@@ -47,82 +49,147 @@ export function HomePage() {
     return Number(row?.total || row?.count || 0);
   }, [stats]);
 
+  const quickItems = [
+    { to: "/subjects", title: "主观题", hint: "按学科进入", icon: <BookOpen size={22} /> },
+    { to: "/practice", title: "自主组题", hint: "自由选择模式", icon: <NotebookPen size={22} /> },
+    { to: "/practice?mode=wrong", title: "错题重刷", hint: `${compactNumber(stats?.wrong_count)} 道待复盘`, icon: <History size={22} /> },
+    { to: "/exams", title: "模拟考试", hint: "限时测评", icon: <ClipboardList size={22} /> },
+  ];
+
+  const toolItems = [
+    { to: "/wrong", title: "错题", icon: <History size={22} /> },
+    { to: "/favorites", title: "收藏", icon: <Heart size={22} /> },
+    { to: "/statistics", title: "笔记", icon: <Bookmark size={22} /> },
+    { to: "/subjects", title: "评论", icon: <MessageSquare size={22} /> },
+    { to: "/statistics", title: "点赞", icon: <ThumbsUp size={22} /> },
+  ];
+
   return (
     <div className="page">
-      <div className="page-heading">
-        <div>
-          <Typography.Title level={2}>学习首页</Typography.Title>
-          <Typography.Text type="secondary">从进度、错题和推荐章节开始今天的复习。</Typography.Text>
+      <section className="hero-dashboard">
+        <div className="hero-dashboard__content">
+          <span className="hero-dashboard__eyebrow">今日题库 · 医学训练工作台</span>
+          <Typography.Title level={1}>稳稳刷完今天这一轮</Typography.Title>
+          <Typography.Paragraph>
+            题库按科目、章节和知识点组织，错题、收藏、模拟考试自动沉淀成复习路径。
+          </Typography.Paragraph>
+          <div className="hero-dashboard__actions">
+            <Link to="/practice">
+              <Button type="primary" size="large" icon={<PlayCircle size={18} />}>开始刷题</Button>
+            </Link>
+            <Link to="/subjects">
+              <Button size="large" icon={<BookOpen size={18} />}>进入题库</Button>
+            </Link>
+          </div>
         </div>
-        <Space wrap>
-          <Link to="/practice">
-            <Button type="primary" icon={<PlayCircle size={16} />}>开始刷题</Button>
+        <div className="hero-dashboard__visual">
+          <div className="hero-dashboard__plate">
+            <BrandMark size="large" />
+          </div>
+          <div className="hero-dashboard__mini">
+            <span>{compactNumber(stats?.total_answers)} 题</span>
+            <span>{percent(stats?.correct_rate)}</span>
+            <span>{compactNumber(stats?.wrong_count)} 错题</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="quick-grid">
+        {quickItems.map((item) => (
+          <Link className="quick-card" to={item.to} key={item.title}>
+            <span className="quick-card__icon">{item.icon}</span>
+            <span className="quick-card__title">{item.title}</span>
+            <span className="quick-card__hint">{item.hint}</span>
           </Link>
-          <Link to="/wrong">
-            <Button icon={<History size={16} />}>错题本</Button>
-          </Link>
-          <Link to="/favorites">
-            <Button icon={<Heart size={16} />}>收藏题</Button>
-          </Link>
-          <Link to="/exams">
-            <Button icon={<ClipboardList size={16} />}>模拟考试</Button>
-          </Link>
-        </Space>
+        ))}
       </div>
 
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={6}>
-          <MetricCard label="总刷题数" value={compactNumber(stats?.total_answers)} hint="累计提交答案" icon={<BookOpen size={18} />} />
+      <Row gutter={[16, 16]} className="section-row">
+        <Col xs={24} xl={13}>
+          <div className="panel today-card">
+            <div className="today-card__head">
+              <div>
+                <Typography.Title level={3}>今日统计</Typography.Title>
+                <Typography.Text type="secondary">更新时间：{new Date().toLocaleTimeString("zh-CN", { hour12: false })}</Typography.Text>
+              </div>
+              <BarChart3 size={22} />
+            </div>
+            <div className="today-card__stats">
+              <div>
+                <strong>{compactNumber(todayCount)}</strong>
+                <span>今日做题</span>
+              </div>
+              <div>
+                <strong>{compactNumber(stats?.total_answers)}</strong>
+                <span>累计题量</span>
+              </div>
+              <div>
+                <strong>{percent(stats?.correct_rate)}</strong>
+                <span>总正确率</span>
+              </div>
+              <div>
+                <strong>{compactNumber(stats?.wrong_count)}</strong>
+                <span>错题待刷</span>
+              </div>
+            </div>
+          </div>
         </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <MetricCard label="正确率" value={percent(stats?.correct_rate)} hint={`${compactNumber(stats?.correct_count)} 道正确`} icon={<BarChart3 size={18} />} />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <MetricCard label="今日刷题" value={compactNumber(todayCount)} hint="来自最近 7 天趋势" icon={<History size={18} />} />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <MetricCard label="错题数量" value={compactNumber(stats?.wrong_count)} hint="建议优先重刷" icon={<Heart size={18} />} />
+        <Col xs={24} xl={11}>
+          <div className="panel tool-strip">
+            {toolItems.map((item) => (
+              <Link className="tool-strip__item" to={item.to} key={item.title}>
+                <span className="tool-strip__icon">{item.icon}</span>
+                <span>{item.title}</span>
+              </Link>
+            ))}
+          </div>
         </Col>
       </Row>
 
       <Row gutter={[16, 16]} className="section-row">
-        <Col xs={24} xl={14}>
+        <Col xs={24} xl={13}>
+          <div className="panel study-board">
+            <div className="study-board__tabs">
+              {termTabs.map((item, index) => (
+                <button type="button" key={item} className={index === 0 ? "study-board__tab study-board__tab--active" : "study-board__tab"}>
+                  {item}
+                </button>
+              ))}
+            </div>
+            {subjects.length ? (
+              <div className="subject-list">
+                {subjects.slice(0, 8).map((subject) => (
+                  <div className="subject-list__row" key={subject.id}>
+                    <span className="subject-list__toggle"><ChevronDown size={18} /></span>
+                    <div>
+                      <div className="subject-list__title">{subject.name}</div>
+                      <div className="subject-list__meta">
+                        {compactNumber(subject.practiced_count)} / {compactNumber(subject.question_count)} 已完成
+                      </div>
+                    </div>
+                    <div className="subject-list__progress">
+                      <span>{compactNumber(subject.practiced_count)}/{compactNumber(subject.question_count)}</span>
+                      <Progress percent={subject.question_count ? Math.round(subject.correct_rate || 0) : 0} showInfo={false} size="small" />
+                    </div>
+                    <Link to={`/practice?subject_id=${subject.id}`}>
+                      <Button type="text">继续做</Button>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <Empty description={loading ? "正在加载科目" : "暂无启用科目"} />
+            )}
+          </div>
+        </Col>
+        <Col xs={24} xl={11}>
           <div className="panel">
             {stats?.recent_7_days?.length ? <EChart option={trend} /> : <Empty description="暂无刷题趋势" />}
           </div>
-        </Col>
-        <Col xs={24} xl={10}>
-          <div className="panel">
+          <div className="panel section-row">
             {stats?.subject_accuracy?.length ? <EChart option={subjectChart} /> : <Empty description="暂无科目正确率" />}
           </div>
-        </Col>
-      </Row>
-
-      <Row gutter={[16, 16]} className="section-row">
-        <Col xs={24} xl={14}>
-          <div className="panel">
-            <div className="panel-title">推荐继续学习</div>
-            <Table
-              rowKey="id"
-              loading={loading}
-              dataSource={subjects}
-              pagination={false}
-              columns={[
-                { title: "科目", dataIndex: "name" },
-                { title: "题量", dataIndex: "question_count", width: 90 },
-                { title: "已刷", dataIndex: "practiced_count", width: 90 },
-                { title: "正确率", dataIndex: "correct_rate", width: 100, render: (value) => percent(value) },
-                {
-                  title: "操作",
-                  width: 120,
-                  render: (_, row) => <Link to={`/practice?subject_id=${row.id}`}>开始练习</Link>,
-                },
-              ]}
-            />
-          </div>
-        </Col>
-        <Col xs={24} xl={10}>
-          <div className="panel">
+          <div className="panel section-row">
             <div className="panel-title">推荐复习章节</div>
             <Space direction="vertical" className="full-width">
               {(stats?.recommended_chapters || []).length ? (

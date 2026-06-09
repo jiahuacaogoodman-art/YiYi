@@ -36,18 +36,48 @@ export function App() {
       locale={zhCN}
       theme={{
         token: {
-          colorPrimary: "#2563eb",
-          colorSuccess: "#16a34a",
-          colorWarning: "#d97706",
-          colorError: "#dc2626",
-          borderRadius: 6,
+          colorPrimary: "#183f38",
+          colorSuccess: "#2f8f62",
+          colorWarning: "#b98538",
+          colorError: "#d74f45",
+          colorInfo: "#183f38",
+          colorText: "#182523",
+          colorTextSecondary: "#77807d",
+          colorBgLayout: "#f6f4ef",
+          colorBgContainer: "#ffffff",
+          colorBorder: "#ebe5d9",
+          borderRadius: 8,
           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif',
         },
         components: {
           Card: { borderRadiusLG: 8 },
-          Button: { borderRadius: 6 },
-          Layout: { siderBg: "#ffffff", bodyBg: "#f5f7fb" },
-          Menu: { itemBorderRadius: 6 },
+          Button: {
+            borderRadius: 8,
+            controlHeight: 36,
+            primaryShadow: "0 10px 24px rgba(24, 63, 56, 0.18)",
+          },
+          Layout: { siderBg: "#12332e", bodyBg: "#f6f4ef" },
+          Menu: {
+            itemBorderRadius: 8,
+            itemSelectedBg: "rgba(214, 179, 116, 0.18)",
+            itemSelectedColor: "#f5d99c",
+            itemColor: "rgba(255,255,255,0.72)",
+            itemHoverColor: "#ffffff",
+            itemHoverBg: "rgba(255,255,255,0.08)",
+          },
+          Segmented: {
+            itemSelectedBg: "#183f38",
+            itemSelectedColor: "#fff8e7",
+          },
+          Table: {
+            headerBg: "#faf7ef",
+            headerColor: "#334844",
+            rowHoverBg: "#fbf8f1",
+          },
+          Progress: {
+            defaultColor: "#c8a467",
+            remainingColor: "#ece7dc",
+          },
         },
       }}
     >
