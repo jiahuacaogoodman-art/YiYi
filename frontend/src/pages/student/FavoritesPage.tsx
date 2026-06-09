@@ -1,5 +1,6 @@
 import { Button, Card, Empty, Form, Select, Space, Typography, message } from "antd";
 import { useEffect, useState } from "react";
+import { Heart } from "lucide-react";
 import { practiceApi, questionApi, taxonomyApi } from "../../api/client";
 import { QuestionViewer } from "../../components/QuestionViewer";
 import type { Chapter, Question, Subject } from "../../types/domain";
@@ -28,11 +29,13 @@ export function FavoritesPage() {
 
   return (
     <div className="page">
-      <div className="page-heading">
+      <div className="page-heading page-heading--hero">
         <div>
+          <span className="page-heading__eyebrow">重点收藏</span>
           <Typography.Title level={2}>收藏题</Typography.Title>
           <Typography.Text type="secondary">集中复习已收藏题目，支持按科目、章节和难度筛选。</Typography.Text>
         </div>
+        <span className="page-heading__badge"><Heart size={18} /> {items.length} 道收藏</span>
       </div>
       <div className="panel">
         <Form layout="inline" className="filter-form">
@@ -82,7 +85,7 @@ export function FavoritesPage() {
           ))
         ) : (
           <div className="panel">
-            <Empty description="暂无收藏题" />
+            <Empty description="暂无收藏题，做题时可以把重点题加入收藏" />
           </div>
         )}
       </Space>

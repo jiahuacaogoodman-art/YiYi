@@ -1,6 +1,6 @@
 import { Button, Card, Col, Empty, Modal, Progress, Row, Space, Tag, Typography, message } from "antd";
 import { useEffect, useMemo, useState } from "react";
-import { Clock, FileCheck2 } from "lucide-react";
+import { Clock, FileCheck2, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 import { examApi, taxonomyApi } from "../../api/client";
 import { QuestionViewer } from "../../components/QuestionViewer";
@@ -62,17 +62,20 @@ export function ExamsPage() {
 
   return (
     <div className="page">
-      <div className="page-heading">
+      <div className="page-heading page-heading--hero">
         <div>
+          <span className="page-heading__eyebrow">模拟测评</span>
           <Typography.Title level={2}>模拟考试</Typography.Title>
           <Typography.Text type="secondary">选择管理员发布的试卷，限时作答并查看成绩解析。</Typography.Text>
         </div>
+        <span className="page-heading__badge"><Trophy size={18} /> {exams.length} 套试卷</span>
       </div>
       <Row gutter={[16, 16]}>
         {exams.length ? (
           exams.map((exam) => (
             <Col xs={24} md={12} xl={8} key={exam.id}>
               <Card variant="borderless" className="exam-card">
+                <span className="exam-card__icon"><FileCheck2 size={22} /></span>
                 <Typography.Title level={4}>{exam.name}</Typography.Title>
                 <Typography.Paragraph type="secondary">{exam.description || "标准模拟考试"}</Typography.Paragraph>
                 <Space wrap>
